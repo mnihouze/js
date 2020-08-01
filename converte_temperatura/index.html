@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Converte</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+</head>
+
+<body>
+    <div class="container col-sm-12 col-md-4 col-lg-4">
+        <div class="mt-5 w-100">
+            <p class="lead">
+                Conversor temperatura
+            </p>
+            <form class="form-inline" method="POST" id="frmConvert">
+                <div class="form-group mb-2 ml-1">
+                    <label for="temperatura" class="sr-only">temperatura</label>
+                    <input type="number" class="form-control form-control-sm" id="temperatura" name="temperatura">
+                </div>
+                <div class="form-group mb-2 ml-1">
+                    <label for="tipo" class="sr-only">tipo</label>
+                    <select class="form-control form-control-sm" name="tipo" id="tipo">
+                        <option value="°C">Grau Celsius (°C)</option>
+                        <option value="°F">Grau Fahrenheit (°F)</option>
+                        <option value="K">Kelvin (K)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm mb-2 ml-1">Converter</button>
+            </form>
+        </div>
+        <div class="row justify-content-start" id="div_content">
+            
+        </div>
+    </div>
+</body>
+<script>
+    function displayResultado(dadoInput, resultado) {
+        let divInput = `<div class="col-4 border border-right-0 py-3 my-auto">
+                            ${dadoInput.temperatura} ${dadoInput.tipo}   = 
+                        </div>
+                        <div class="col-8 border border-left-0 my-auto py-1">`;
+        return divInput + resultado.map(function (result, index) {
+            var valorOperacao = typeof result.resultado == 'number' ? result.resultado.toFixed(2) : result.resultado;
+            return `${valorOperacao} ${result.tipo}`;
+        }).join('<br>') + `</div>`;
+    }
+
+    function calcTemperatura(temperatura, tipo) {
+        var array_resultado = [];
+
+        if (temperatura) {
+            switch (tipo) {
+                case '°C':
+                    array_resultado.push({ tipo: '°F', resultado: (temperatura * 9 / 5) + 32 });
+                    array_resultado.push({ tipo: 'K', resultado: temperatura + 273.15 });
+                    break;
+                case '°F':
+                    array_resultado.push({ tipo: '°C', resultado: (temperatura - 32) * 5 / 9 });
+                    array_resultado.push({ tipo: 'K', resultado: (temperatura - 32) * 5 / 9 + 273.15 });
+                    break;
+                case 'K':
+                    array_resultado.push({ tipo: '°C', resultado: temperatura - 273.15 });
+                    array_resultado.push({ tipo: '°F', resultado: (temperatura - 273.15) * 9 / 5 + 32 });
+                    break;
+                default:
+                    array_resultado.push({ tipo: '°F', resultado: (temperatura * 9 / 5) + 32 });
+                    array_resultado.push({ tipo: 'K', resultado: temperatura + 273.15 });
+                    break;
+            }
+        }
+        else {
+            array_resultado.push({ tipo: ' :(', resultado: 'Não é um número válido' });
+        }
+        return array_resultado;
+    }
+
+    const frmData = document.getElementById('frmConvert');
+    frmData.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        let temperatura = parseInt(event.target.temperatura.value);
+        let tipo = event.target.tipo.selectedOptions[0].value;
+
+        const dadoInput = { temperatura, tipo };
+
+        document.querySelector('#div_content').innerHTML = displayResultado(dadoInput, calcTemperatura(temperatura, tipo));
+    });
+
+</script>
+
+</html>
